@@ -105,5 +105,8 @@ dist
 
 # Added
 .DS_Store
-build
 package-lock.json
+
+
+[branch "main"]
+excludesfile = +build
