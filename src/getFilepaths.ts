@@ -3,7 +3,8 @@ import path from 'path';
 
 import { removeParenthesizedText } from './utils';
 
-interface Filepaths {
+export interface Filepaths {
+  baseFileName: string;
   audioFile: string;
   videoFile: string;
 }
@@ -20,8 +21,9 @@ export default function getFilepaths(
     .toLowerCase();
 
   const filepaths = {
+    baseFileName,
     audioFile: path.join(outputDir, baseFileName + '.mp3'),
-    videoFile: path.join(outputDir, baseFileName + '.mp4'),
+    videoFile: path.join(outputDir, baseFileName + '.mp4')
   };
 
   Object.values(filepaths).forEach((file) => {

@@ -25,9 +25,13 @@ interface SongTags {
 export default async function extractSongTags(
   videoInfo: VideoInfo,
   verify?: boolean
-): Promise<SongTags> {
+): Promise<SongTags | Error> {
   const searchTerm = removeParenthesizedText(videoInfo.videoDetails.title);
   const results = await fetchSearchResults(searchTerm);
+
+  if (results instanceof Error) {
+    return results;
+  }
 
   let result = results[0];
   if (verify) {

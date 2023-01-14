@@ -7,18 +7,23 @@ import { getDownloadsDir, isDirectory } from './utils';
 import convertVideoToAudio from './convertVideoToAudio';
 import downloadVideo from './downloadVideo';
 import extractSongTags from './extractSongTags';
-import getFilepaths from './getFilepaths';
+import getFilepaths, { Filepaths } from './getFilepaths';
+import renameFile from './renameFile';
 
 interface Options {
   outputDir?: string;
   getTags?: boolean;
+  tryTags?: boolean;
   verifyTags?: boolean;
+  renameFile?: boolean;
 }
 
-export default async function downloadSong(
-  url: string,
-  options?: Options
-): Promise<void> {
+interface DownloadSong {
+  filepaths: Filepaths;
+  videoInfo?: ytdl.videoInfo;
+}
+
+export default async function downloadSong(url: string, options?: Options): Promise<DownloadSong> {
   if (options?.outputDir && !isDirectory(options.outputDir)) {
     throw new NotADirectoryError(options.outputDir);
   }
@@ -28,17 +33,26 @@ export default async function downloadSong(
     );
   });
 
-  const filepaths = getFilepaths(
-    videoInfo.videoDetails.title,
-    options?.outputDir || getDownloadsDir()
-  );
+  const filepaths = getFilepaths(videoInfo.videoDetails.title, options?.outputDir || getDownloadsDir());
+
   await downloadVideo(videoInfo, filepaths.videoFile);
   convertVideoToAudio(filepaths.videoFile, filepaths.audioFile);
 
-  if (options?.getTags) {
+  if (options?.getTags || options?.tryTags) {
     const songTags = await extractSongTags(videoInfo, options.verifyTags);
-    NodeID3.write(songTags, filepaths.audioFile);
+
+    if (songTags instanceof Error) {
+      if (options?.getTags) {
+        throw new Error(songTags as any);
+      }
+    } else {
+      NodeID3.write(songTags, filepaths.audioFile);
+    }
   }
 
-  console.log(`Done! Output file: ${filepaths.audioFile}`);
+  if (options?.renameFile) {
+    renameFile(filepaths, videoInfo.videoDetails.title);
+  }
+  
+  return { filepaths, videoInfo };
 }

@@ -106,3 +106,4 @@ dist
 # Added
 .DS_Store
 build
+package-lock.json
