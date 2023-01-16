@@ -4,7 +4,7 @@ import ytdl from 'ytdl-core';
 import { NotADirectoryError, VideoInfoFetchError } from './exceptions';
 import { getDownloadsDir, isDirectory } from './utils';
 
-import convertVideoToAudio from './convertVideoToAudio';
+import convertVideoToAudio, { Bitrates } from './convertVideoToAudio';
 import downloadVideo from './downloadVideo';
 import extractSongTags from './extractSongTags';
 import getFilepaths, { Filepaths } from './getFilepaths';
@@ -16,6 +16,7 @@ interface Options {
   tryTags?: boolean;
   verifyTags?: boolean;
   renameFile?: boolean;
+  bitrate?: Bitrates;
 }
 
 interface DownloadSong {
@@ -36,7 +37,7 @@ export default async function downloadSong(url: string, options?: Options): Prom
   const filepaths = getFilepaths(videoInfo.videoDetails.title, options?.outputDir || getDownloadsDir());
 
   await downloadVideo(videoInfo, filepaths.videoFile);
-  convertVideoToAudio(filepaths.videoFile, filepaths.audioFile);
+  convertVideoToAudio(filepaths.videoFile, filepaths.audioFile, options?.bitrate ?? '192');
 
   if (options?.getTags || options?.tryTags) {
     const songTags = await extractSongTags(videoInfo, options.verifyTags);
@@ -53,6 +54,6 @@ export default async function downloadSong(url: string, options?: Options): Prom
   if (options?.renameFile) {
     renameFile(filepaths, videoInfo.videoDetails.title);
   }
-  
+
   return { filepaths, videoInfo };
 }
