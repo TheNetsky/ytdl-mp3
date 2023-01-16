@@ -22,6 +22,7 @@ const extractSongTags_1 = __importDefault(require("./extractSongTags"));
 const getFilepaths_1 = __importDefault(require("./getFilepaths"));
 const renameFile_1 = __importDefault(require("./renameFile"));
 function downloadSong(url, options) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         if ((options === null || options === void 0 ? void 0 : options.outputDir) && !(0, utils_1.isDirectory)(options.outputDir)) {
             throw new exceptions_1.NotADirectoryError(options.outputDir);
@@ -31,7 +32,7 @@ function downloadSong(url, options) {
         });
         const filepaths = (0, getFilepaths_1.default)(videoInfo.videoDetails.title, (options === null || options === void 0 ? void 0 : options.outputDir) || (0, utils_1.getDownloadsDir)());
         yield (0, downloadVideo_1.default)(videoInfo, filepaths.videoFile);
-        (0, convertVideoToAudio_1.default)(filepaths.videoFile, filepaths.audioFile);
+        (0, convertVideoToAudio_1.default)(filepaths.videoFile, filepaths.audioFile, (_a = options === null || options === void 0 ? void 0 : options.bitrate) !== null && _a !== void 0 ? _a : '192');
         if ((options === null || options === void 0 ? void 0 : options.getTags) || (options === null || options === void 0 ? void 0 : options.tryTags)) {
             const songTags = yield (0, extractSongTags_1.default)(videoInfo, options.verifyTags);
             if (songTags instanceof Error) {

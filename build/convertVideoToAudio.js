@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = __importDefault(require("child_process"));
 const fs_1 = __importDefault(require("fs"));
 const ffmpeg_static_1 = __importDefault(require("ffmpeg-static"));
-function convertVideoToAudio(inputFile, outputFile) {
+function convertVideoToAudio(inputFile, outputFile, bitrate) {
     if (!fs_1.default.existsSync(inputFile)) {
         throw new Error('Input file does not exist: ' + inputFile);
     }
-    child_process_1.default.execSync(`${ffmpeg_static_1.default} -loglevel 24 -i ${inputFile} -vn -sn -c:a mp3 -ab 192k ${outputFile}`);
+    child_process_1.default.execSync(`${ffmpeg_static_1.default} -loglevel 24 -i ${inputFile} -vn -sn -c:a mp3 -ab ${bitrate}k ${outputFile}`);
     fs_1.default.rmSync(inputFile);
 }
 exports.default = convertVideoToAudio;

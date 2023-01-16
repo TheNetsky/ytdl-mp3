@@ -1,4 +1,5 @@
 import ytdl from 'ytdl-core';
+import { Bitrates } from './convertVideoToAudio';
 import { Filepaths } from './getFilepaths';
 interface Options {
     outputDir?: string;
@@ -6,6 +7,7 @@ interface Options {
     tryTags?: boolean;
     verifyTags?: boolean;
     renameFile?: boolean;
+    bitrate?: Bitrates;
 }
 interface DownloadSong {
     filepaths: Filepaths;
